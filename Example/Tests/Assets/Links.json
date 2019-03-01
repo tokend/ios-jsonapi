@@ -1,0 +1,8 @@
+{
+    "data": [],
+    "links": {
+        "self": "/v2/resource?&page%5bnumber%5d=0&page%5blimit%5d=15",
+        "next": "/v2/resource?&page%5bnumber%5d=1&page%5blimit%5d=15",
+        "last": "/v2/resource?&page%5bnumber%5d=1&page%5blimit%5d=15"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "errors": [
+        {
+            "title": "Bad Request",
+            "status": "400",
+            "meta": {
+                "error": "Error description",
+                "field": "id"
+            }
+        },
+        {
+            "title": "Bad Request",
+            "status": "400",
+            "meta": {
+                "error": "Error description",
+                "field": "id"
+            }
+        }
+    ]
+}

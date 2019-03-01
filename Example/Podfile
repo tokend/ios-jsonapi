@@ -1,0 +1,25 @@
+platform :ios, '10.0'
+
+source 'git@github.com:tokend/ios-specs.git'
+source 'https://github.com/CocoaPods/Specs.git'
+
+use_modular_headers!
+
+def main_pods
+    pod 'DLJSONAPI', :path => '../'
+end
+
+def all_pods
+    pod 'DLJSONAPI', :path => '../'
+    pod 'DLJSONAPI/AlamofirePlugin', :path => '../'
+end
+
+target 'DLJSONAPI_Example' do
+    main_pods
+end
+
+target 'DLJSONAPI_Tests' do
+    inherit! :search_paths
+    
+    all_pods
+end
