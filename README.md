@@ -24,6 +24,5 @@ DLJSONAPI uses its own pod spec repository. In order to setup it perform once in
 pod repo add ios-specs 'git@github.com:tokend/ios-specs.git'
 ```
 
-## Authors
-
-Distributed Lab
+## Credits
+<a href="https://distributedlab.com/" target="_blank">Distributed Lab</a>, 2019
