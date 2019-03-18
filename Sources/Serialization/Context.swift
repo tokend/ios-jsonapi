@@ -105,7 +105,9 @@ public class Context: NSObject {
                     fatalError("Invalid data type for relationships")
                 }
                 
-                let data = relation["data"]
+                guard let data = relation["data"] else {
+                    return
+                }
                 
                 if let single = data as? NSMutableDictionary {
                     self.mapResource(for: single, overwrite: false)

@@ -36,6 +36,9 @@
                     "id":"123123",
                     "type": "persons1"
                 }
+            },
+            "emptyRelation": {
+                
             }
         }
     }],

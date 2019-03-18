@@ -1,10 +1,10 @@
 PODS:
   - Alamofire (4.8.0)
-  - DLJSONAPI (1.0.2):
-    - DLJSONAPI/Default (= 1.0.2)
-  - DLJSONAPI/AlamofirePlugin (1.0.2):
+  - DLJSONAPI (1.0.3):
+    - DLJSONAPI/Default (= 1.0.3)
+  - DLJSONAPI/AlamofirePlugin (1.0.3):
     - Alamofire
-  - DLJSONAPI/Default (1.0.2)
+  - DLJSONAPI/Default (1.0.3)
 
 DEPENDENCIES:
   - DLJSONAPI (from `../`)
@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
-  DLJSONAPI: 2d46e0eda233deafb6f3a7d5bd50bc6d6d024a2a
+  DLJSONAPI: be04c8eb7830f480252e77c7025e5aabfa1d5037
 
 PODFILE CHECKSUM: 662bab7626519ca5866290f435d306224f138f32
 
