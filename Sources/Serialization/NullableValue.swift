@@ -24,31 +24,31 @@ extension String: NullableAware {
 }
 
 public extension Array where Element == String {
-    public var isNull: Bool {
+    var isNull: Bool {
         return self.first == .null
     }
     
-    public static var null: [Element] {
+    static var null: [Element] {
         return NullableConstants.nullStringArray
     }
 }
 
 public extension Dictionary where Key == String, Value: Any {
-    public static var null: [String: Any] {
+    static var null: [String: Any] {
         return NullableConstants.nullDictionary
     }
     
-    public var isNull: Bool {
+    var isNull: Bool {
         return self[.null] is NSNull
     }
 }
 
 public extension Array where Element == [String: Any] {
-    public static var null: [Element] {
+    static var null: [Element] {
         return NullableConstants.nullDictionaryArray
     }
     
-    public var isNull: Bool {
+    var isNull: Bool {
         return self.first?.isNull ?? false
     }
 }
@@ -64,11 +64,11 @@ extension NSNumber: NullableAware {
 }
 
 public extension Array where Element == NSNumber {
-    public static var null: [Element] {
+    static var null: [Element] {
         return NullableConstants.nullNumberArray
     }
     
-    public var isNull: Bool {
+    var isNull: Bool {
         return self.first?.isNull ?? false
     }
 }
@@ -87,11 +87,11 @@ extension Resource: NullableAware {
 }
 
 public extension Array where Element: Resource {
-    public var isNull: Bool {
+    var isNull: Bool {
         return self.first?.id == .null
     }
     
-    public static var null: [Element] {
+    static var null: [Element] {
         return [.null()]
     }
 }
