@@ -23,6 +23,7 @@ extension URLKey {
     public enum PageAttribute: String {
         
         case number
+        case cursor
         case limit
         case order
     }

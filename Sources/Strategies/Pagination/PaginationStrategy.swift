@@ -5,9 +5,9 @@ public protocol PaginationStrategy {
     associatedtype PageModel = PageModelProtocol
     
     var currentPage: PageModel? { get set }
-    var firstPage: PageModel { get }
-    var prevPage: PageModel? { get }
-    var nextPage: PageModel? { get }
+    var firstPage: PageModel { get set }
+    var prevPage: PageModel? { get set }
+    var nextPage: PageModel? { get set }
     var lastPage: PageModel? { get set }
     
     init?(links: Links, defaultLimit: Int, defaultOrder: PaginationOrder)
@@ -15,10 +15,7 @@ public protocol PaginationStrategy {
     /// Should reset `currentPage` to `nil`.
     /// - Returns: Value of `firstPage`.
     func toStartPage() -> PageModel
-    func toNextPage() -> PageModel?
     func lastPageReached()
-    
-    func getWholeRangePage(defaultLimit: Int, maxLimit: Int) -> PageModel
 }
 
 public enum PaginationOrder: String {

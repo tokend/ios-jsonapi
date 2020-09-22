@@ -55,34 +55,6 @@ class IndexedPaginationStrategyTests: XCTestCase {
             "IndexedPaginationStrategy current page limit is wrong. Has (\(currentPage.limit)), but expected (\(15))."
         )
         
-        guard let nextPage = paginationStrategy.toNextPage() else {
-            XCTAssert(false, "Failed to get next page")
-            return
-        }
-        
-        XCTAssert(
-            nextPage.index == 1,
-            "IndexedPaginationStrategy next page index is wrong. Has (\(nextPage.index)), but expected (\(1))."
-        )
-        
-        if let lastPage = paginationStrategy.toNextPage() {
-            XCTAssert(
-                false,
-                "IndexedPaginationStrategy last page should be with index (\(1)). Has (\(lastPage.index))."
-            )
-            return
-        }
-        
-        let wholeRangePage = paginationStrategy.getWholeRangePage(defaultLimit: 100, maxLimit: Int.max)
-        XCTAssert(
-            wholeRangePage.index == 0,
-            "IndexedPaginationStrategy whole range page index is wrong. Has (\(wholeRangePage.index)), but expected (\(0))."
-        )
-        XCTAssert(
-            wholeRangePage.limit == 30,
-            "IndexedPaginationStrategy whole range page limit is wrong. Has (\(wholeRangePage.limit)), but expected (\(30))."
-        )
-        
         XCTAssert(true)
     }
 }

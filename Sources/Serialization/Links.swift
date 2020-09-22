@@ -53,6 +53,10 @@ public struct Link {
     public var pageNumberQueryItem: QueryItem? {
         return self.queryItemForURLKey(.page(.number))
     }
+
+    public var pageCursorQueryItem: QueryItem? {
+        return self.queryItemForURLKey(.page(.cursor))
+    }
     
     public var pageLimitQueryItem: QueryItem? {
         return self.queryItemForURLKey(.page(.limit))
@@ -78,7 +82,7 @@ public struct Link {
         let queryItemsComponents = urlComponents[1].components(separatedBy: "&")
         self.queryItems = queryItemsComponents.compactMap({ (component) -> QueryItem? in
             let components = component.components(separatedBy: "=")
-            guard components.count >= 1, components.count <= 2 else { return nil }
+            guard 1...2 ~= components.count else { return nil }
             
             let name = components[0]
             

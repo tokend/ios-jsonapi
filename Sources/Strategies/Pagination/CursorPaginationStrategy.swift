@@ -1,19 +1,19 @@
 import Foundation
 
-public class IndexedPaginationStrategy: PaginationStrategy {
-    
-    public typealias PageModel = IndexedPageModel
-    
-    public var index: Int?
+public class CursorPaginationStrategy: PaginationStrategy {
+
+    public typealias PageModel = CursorPageModel
+
+    public var cursor: String?
     public let limit: Int
     public let order: PaginationOrder
-    
+
     public var currentPage: PageModel? {
-        set { self.index = newValue?.index }
+        set { self.cursor = newValue?.cursor }
         get {
-            guard let index = self.index else { return nil }
+            guard let cursor = self.cursor else { return nil }
             return PageModel(
-                index: index,
+                cursor: cursor,
                 limit: self.limit,
                 order: self.order
             )
@@ -24,59 +24,59 @@ public class IndexedPaginationStrategy: PaginationStrategy {
     public var lastPage: PageModel?
     public var prevPage: PageModel?
     public var nextPage: PageModel?
-    
+
     // MARK: -
-    
+
     public init(
-        index: Int?,
+        cursor: String?,
         limit: Int,
         order: PaginationOrder
         ) {
-        
-        self.index = index
+
+        self.cursor = cursor
         self.limit = limit
         self.order = order
         self.firstPage = PageModel(
-            index: 0,
-            limit: limit,
-            order: order
+            cursor: nil,
+            limit: self.limit,
+            order: self.order
         )
     }
-    
+
     required public init?(
         links: Links,
         defaultLimit: Int = 10,
         defaultOrder: PaginationOrder = .descending
         ) {
-        
-        guard let currentPage = links.indexedCurrentPage(
+
+        guard let currentPage = links.cursorCurrentPage(
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
             ) else {
                 return nil
         }
-        
-        self.index = currentPage.index
+
+        self.cursor = currentPage.cursor
         self.limit = currentPage.limit
         self.order = currentPage.order
-        
-        self.lastPage = links.indexedLastPage(
+
+        self.lastPage = links.cursorLastPage(
             defaultLimit: currentPage.limit,
             defaultOrder: defaultOrder
         )
 
-        self.prevPage = links.indexedPrevPage(
+        self.prevPage = links.cursorPrevPage(
             defaultLimit: currentPage.limit,
             defaultOrder: defaultOrder
         )
 
-        self.nextPage = links.indexedNextPage(
+        self.nextPage = links.cursorNextPage(
             defaultLimit: currentPage.limit,
             defaultOrder: defaultOrder
         )
 
         self.firstPage = {
-            if let firstPage = links.indexedFirstPage(
+            if let firstPage = links.cursorFirstPage(
                 defaultLimit: currentPage.limit,
                 defaultOrder: defaultOrder
                 ) {
@@ -86,88 +86,87 @@ public class IndexedPaginationStrategy: PaginationStrategy {
             } else {
 
                 return PageModel(
-                    index: 0,
+                    cursor: nil,
                     limit: currentPage.limit,
                     order: currentPage.order
                 )
             }
         }()
     }
-    
+
     // MARK: - PaginationStrategy
-    
+
     public func toStartPage() -> PageModel {
         let startPage = self.firstPage
         self.currentPage = nil
-        
+
         return startPage
     }
-    
+
     public func lastPageReached() {
         self.lastPage = self.currentPage
     }
 }
 
-public struct IndexedPageModel: PageModelProtocol {
-    
+public struct CursorPageModel: PageModelProtocol {
+
     // MARK: - Public properties
-    
-    public let index: Int
+
+    public let cursor: String?
     public let limit: Int
     public let order: PaginationOrder
-    
+
     // MARK: -
-    
+
     public init(
-        index: Int,
+        cursor: String?,
         limit: Int,
         order: PaginationOrder
         ) {
-        
-        self.index = index
+
+        self.cursor = cursor
         self.limit = limit
         self.order = order
     }
-    
+
     // MARK: - PageModel
-    
+
     public func urlQueryItems() -> [URLQueryItem] {
         let queryItems: [URLQueryItem] = [
-            QueryItem(urlKey: .page(.number), value: "\(self.index)"),
+            QueryItem(urlKey: .page(.cursor), value: self.cursor),
             QueryItem(urlKey: .page(.limit), value: "\(self.limit)"),
             QueryItem(urlKey: .page(.order), value: self.order.rawValue)
             ].map({ $0.urlQueryItem })
-        
+
         return queryItems
     }
 }
 
 extension Links {
-    
-    public static func indexedPageForLink(
+
+    public static func cursorPageForLink(
         _ link: Link?,
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-        ) -> IndexedPageModel? {
-        
+        ) -> CursorPageModel? {
+
         guard let link = link,
-            let pageNumberQueryItem = link.pageNumberQueryItem,
-            let indexString = pageNumberQueryItem.value,
-            let index = Int(indexString) else {
-                
+            let pageCursorQueryItem = link.pageCursorQueryItem,
+            let cursor = pageCursorQueryItem.value else {
+
                 return nil
         }
-        
+
         let limit: Int
         if let pageLimitQueryItem = link.pageLimitQueryItem,
             let limitString = pageLimitQueryItem.value,
             let limitValue = Int(limitString) {
-            
+
             limit = limitValue
         } else {
             limit = defaultLimit
         }
-        
+
         let order: PaginationOrder
         if let pageOrderQueryItem = link.pageOrderQueryItem,
             let orderString = pageOrderQueryItem.value,
@@ -176,68 +175,68 @@ extension Links {
         } else {
             order = defaultOrder
         }
-        
-        return IndexedPageModel(
-            index: index,
+
+        return CursorPageModel(
+            cursor: cursor,
             limit: limit,
             order: order
         )
     }
-    
-    public func indexedCurrentPage(
+
+    public func cursorCurrentPage(
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-        ) -> IndexedPageModel? {
-        
-        return Links.indexedPageForLink(
+        ) -> CursorPageModel? {
+
+        return Links.cursorPageForLink(
             self.aSelf,
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
         )
     }
-    
-    public func indexedLastPage(
+
+    public func cursorLastPage(
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-        ) -> IndexedPageModel? {
-        
-        return Links.indexedPageForLink(
+        ) -> CursorPageModel? {
+
+        return Links.cursorPageForLink(
             self.last,
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
         )
     }
 
-    public func indexedFirstPage(
+    public func cursorFirstPage(
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-    ) -> IndexedPageModel? {
+    ) -> CursorPageModel? {
 
-        return Links.indexedPageForLink(
+        return Links.cursorPageForLink(
             self.first,
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
         )
     }
 
-    public func indexedNextPage(
+    public func cursorNextPage(
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-    ) -> IndexedPageModel? {
+    ) -> CursorPageModel? {
 
-        return Links.indexedPageForLink(
+        return Links.cursorPageForLink(
             self.next,
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
         )
     }
 
-    public func indexedPrevPage(
+    public func cursorPrevPage(
         defaultLimit: Int,
         defaultOrder: PaginationOrder
-    ) -> IndexedPageModel? {
+    ) -> CursorPageModel? {
 
-        return Links.indexedPageForLink(
+        return Links.cursorPageForLink(
             self.prev,
             defaultLimit: defaultLimit,
             defaultOrder: defaultOrder
