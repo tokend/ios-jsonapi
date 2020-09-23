@@ -36,8 +36,8 @@ public class IndexedPaginationStrategy: PaginationStrategy {
         self.index = index
         self.limit = limit
         self.order = order
-        self.firstPage = PageModel.defaultFirstPage(
-            defaultLimit: limit,
+        self.firstPage = PageModel(
+            firstPageWithDefaultLimit: limit,
             defaultOrder: order
         )
     }
@@ -84,8 +84,8 @@ public class IndexedPaginationStrategy: PaginationStrategy {
 
             } else {
 
-                return PageModel.defaultFirstPage(
-                    defaultLimit: currentPage.limit,
+                return PageModel(
+                    firstPageWithDefaultLimit: currentPage.limit,
                     defaultOrder: currentPage.order
                 )
             }
@@ -107,18 +107,6 @@ public class IndexedPaginationStrategy: PaginationStrategy {
 }
 
 public struct IndexedPageModel: PageModelProtocol {
-
-    public static func defaultFirstPage(
-        defaultLimit: PaginationStrategy.Limit,
-        defaultOrder: PaginationOrder
-    ) -> IndexedPageModel {
-
-        IndexedPageModel(
-            index: 0,
-            limit: defaultLimit,
-            order: defaultOrder
-        )
-    }
     
     // MARK: - Public properties
     
@@ -137,6 +125,18 @@ public struct IndexedPageModel: PageModelProtocol {
         self.index = index
         self.limit = limit
         self.order = order
+    }
+
+    public init(
+        firstPageWithDefaultLimit defaultLimit: Int,
+        defaultOrder: PaginationOrder
+    ) {
+
+        self.init(
+            index: 0,
+            limit: defaultLimit,
+            order: defaultOrder
+        )
     }
     
     // MARK: - PageModel

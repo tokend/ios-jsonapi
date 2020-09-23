@@ -33,8 +33,9 @@ public protocol PageModelProtocol {
     
     func urlQueryItems() -> [URLQueryItem]
 
-    static func defaultFirstPage(
-        defaultLimit: PaginationStrategy.Limit,
+    /// Should init default first page
+    init(
+        firstPageWithDefaultLimit defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
-    ) -> Self
+    )
 }

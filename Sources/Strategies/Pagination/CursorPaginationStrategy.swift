@@ -36,8 +36,8 @@ public class CursorPaginationStrategy: PaginationStrategy {
         self.cursor = cursor
         self.limit = limit
         self.order = order
-        self.firstPage = PageModel.defaultFirstPage(
-            defaultLimit: limit,
+        self.firstPage = PageModel(
+            firstPageWithDefaultLimit: limit,
             defaultOrder: order
         )
     }
@@ -84,8 +84,8 @@ public class CursorPaginationStrategy: PaginationStrategy {
 
             } else {
 
-                return PageModel.defaultFirstPage(
-                    defaultLimit: currentPage.limit,
+                return PageModel(
+                    firstPageWithDefaultLimit: currentPage.limit,
                     defaultOrder: currentPage.order
                 )
             }
@@ -108,18 +108,6 @@ public class CursorPaginationStrategy: PaginationStrategy {
 
 public struct CursorPageModel: PageModelProtocol {
 
-    public static func defaultFirstPage(
-        defaultLimit: PaginationStrategy.Limit,
-        defaultOrder: PaginationOrder
-    ) -> CursorPageModel {
-
-        CursorPageModel(
-            cursor: nil,
-            limit: defaultLimit,
-            order: defaultOrder
-        )
-    }
-
     // MARK: - Public properties
 
     public let cursor: String?
@@ -137,6 +125,18 @@ public struct CursorPageModel: PageModelProtocol {
         self.cursor = cursor
         self.limit = limit
         self.order = order
+    }
+
+    public init(
+        firstPageWithDefaultLimit defaultLimit: Int,
+        defaultOrder: PaginationOrder
+    ) {
+
+        self.init(
+            cursor: nil,
+            limit: defaultLimit,
+            order: defaultOrder
+        )
     }
 
     // MARK: - PageModel
