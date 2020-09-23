@@ -5,7 +5,7 @@ public class IndexedPaginationStrategy: PaginationStrategy {
     public typealias PageModel = IndexedPageModel
     
     public var index: Int?
-    public let limit: Int
+    public let limit: Limit
     public let order: PaginationOrder
     
     public var currentPage: PageModel? {
@@ -29,23 +29,22 @@ public class IndexedPaginationStrategy: PaginationStrategy {
     
     public init(
         index: Int?,
-        limit: Int,
+        limit: Limit,
         order: PaginationOrder
         ) {
         
         self.index = index
         self.limit = limit
         self.order = order
-        self.firstPage = PageModel(
-            index: 0,
-            limit: limit,
-            order: order
+        self.firstPage = PageModel.defaultFirstPage(
+            defaultLimit: limit,
+            defaultOrder: order
         )
     }
     
     required public init?(
         links: Links,
-        defaultLimit: Int = 10,
+        defaultLimit: Limit = 10,
         defaultOrder: PaginationOrder = .descending
         ) {
         
@@ -78,17 +77,16 @@ public class IndexedPaginationStrategy: PaginationStrategy {
         self.firstPage = {
             if let firstPage = links.indexedFirstPage(
                 defaultLimit: currentPage.limit,
-                defaultOrder: defaultOrder
+                defaultOrder: currentPage.order
                 ) {
 
                 return firstPage
 
             } else {
 
-                return PageModel(
-                    index: 0,
-                    limit: currentPage.limit,
-                    order: currentPage.order
+                return PageModel.defaultFirstPage(
+                    defaultLimit: currentPage.limit,
+                    defaultOrder: currentPage.order
                 )
             }
         }()
@@ -109,18 +107,30 @@ public class IndexedPaginationStrategy: PaginationStrategy {
 }
 
 public struct IndexedPageModel: PageModelProtocol {
+
+    public static func defaultFirstPage(
+        defaultLimit: PaginationStrategy.Limit,
+        defaultOrder: PaginationOrder
+    ) -> IndexedPageModel {
+
+        IndexedPageModel(
+            index: 0,
+            limit: defaultLimit,
+            order: defaultOrder
+        )
+    }
     
     // MARK: - Public properties
     
     public let index: Int
-    public let limit: Int
+    public let limit: PaginationStrategy.Limit
     public let order: PaginationOrder
     
     // MARK: -
     
     public init(
         index: Int,
-        limit: Int,
+        limit: PaginationStrategy.Limit,
         order: PaginationOrder
         ) {
         
@@ -146,7 +156,7 @@ extension Links {
     
     public static func indexedPageForLink(
         _ link: Link?,
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> IndexedPageModel? {
         
@@ -158,10 +168,10 @@ extension Links {
                 return nil
         }
         
-        let limit: Int
+        let limit: PaginationStrategy.Limit
         if let pageLimitQueryItem = link.pageLimitQueryItem,
             let limitString = pageLimitQueryItem.value,
-            let limitValue = Int(limitString) {
+            let limitValue = PaginationStrategy.Limit(limitString) {
             
             limit = limitValue
         } else {
@@ -185,7 +195,7 @@ extension Links {
     }
     
     public func indexedCurrentPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> IndexedPageModel? {
         
@@ -197,7 +207,7 @@ extension Links {
     }
     
     public func indexedLastPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> IndexedPageModel? {
         
@@ -209,7 +219,7 @@ extension Links {
     }
 
     public func indexedFirstPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> IndexedPageModel? {
 
@@ -221,7 +231,7 @@ extension Links {
     }
 
     public func indexedNextPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> IndexedPageModel? {
 
@@ -233,7 +243,7 @@ extension Links {
     }
 
     public func indexedPrevPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> IndexedPageModel? {
 

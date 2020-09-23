@@ -5,7 +5,7 @@ public class CursorPaginationStrategy: PaginationStrategy {
     public typealias PageModel = CursorPageModel
 
     public var cursor: String?
-    public let limit: Int
+    public let limit: Limit
     public let order: PaginationOrder
 
     public var currentPage: PageModel? {
@@ -29,23 +29,22 @@ public class CursorPaginationStrategy: PaginationStrategy {
 
     public init(
         cursor: String?,
-        limit: Int,
+        limit: Limit,
         order: PaginationOrder
         ) {
 
         self.cursor = cursor
         self.limit = limit
         self.order = order
-        self.firstPage = PageModel(
-            cursor: nil,
-            limit: self.limit,
-            order: self.order
+        self.firstPage = PageModel.defaultFirstPage(
+            defaultLimit: limit,
+            defaultOrder: order
         )
     }
 
     required public init?(
         links: Links,
-        defaultLimit: Int = 10,
+        defaultLimit: Limit = 10,
         defaultOrder: PaginationOrder = .descending
         ) {
 
@@ -78,17 +77,16 @@ public class CursorPaginationStrategy: PaginationStrategy {
         self.firstPage = {
             if let firstPage = links.cursorFirstPage(
                 defaultLimit: currentPage.limit,
-                defaultOrder: defaultOrder
+                defaultOrder: currentPage.order
                 ) {
 
                 return firstPage
 
             } else {
 
-                return PageModel(
-                    cursor: nil,
-                    limit: currentPage.limit,
-                    order: currentPage.order
+                return PageModel.defaultFirstPage(
+                    defaultLimit: currentPage.limit,
+                    defaultOrder: currentPage.order
                 )
             }
         }()
@@ -110,17 +108,29 @@ public class CursorPaginationStrategy: PaginationStrategy {
 
 public struct CursorPageModel: PageModelProtocol {
 
+    public static func defaultFirstPage(
+        defaultLimit: PaginationStrategy.Limit,
+        defaultOrder: PaginationOrder
+    ) -> CursorPageModel {
+
+        CursorPageModel(
+            cursor: nil,
+            limit: defaultLimit,
+            order: defaultOrder
+        )
+    }
+
     // MARK: - Public properties
 
     public let cursor: String?
-    public let limit: Int
+    public let limit: PaginationStrategy.Limit
     public let order: PaginationOrder
 
     // MARK: -
 
     public init(
         cursor: String?,
-        limit: Int,
+        limit: PaginationStrategy.Limit,
         order: PaginationOrder
         ) {
 
@@ -146,7 +156,7 @@ extension Links {
 
     public static func cursorPageForLink(
         _ link: Link?,
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> CursorPageModel? {
 
@@ -157,10 +167,10 @@ extension Links {
                 return nil
         }
 
-        let limit: Int
+        let limit: PaginationStrategy.Limit
         if let pageLimitQueryItem = link.pageLimitQueryItem,
             let limitString = pageLimitQueryItem.value,
-            let limitValue = Int(limitString) {
+            let limitValue = PaginationStrategy.Limit(limitString) {
 
             limit = limitValue
         } else {
@@ -184,7 +194,7 @@ extension Links {
     }
 
     public func cursorCurrentPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> CursorPageModel? {
 
@@ -196,7 +206,7 @@ extension Links {
     }
 
     public func cursorLastPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
         ) -> CursorPageModel? {
 
@@ -208,7 +218,7 @@ extension Links {
     }
 
     public func cursorFirstPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> CursorPageModel? {
 
@@ -220,7 +230,7 @@ extension Links {
     }
 
     public func cursorNextPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> CursorPageModel? {
 
@@ -232,7 +242,7 @@ extension Links {
     }
 
     public func cursorPrevPage(
-        defaultLimit: Int,
+        defaultLimit: PaginationStrategy.Limit,
         defaultOrder: PaginationOrder
     ) -> CursorPageModel? {
 
