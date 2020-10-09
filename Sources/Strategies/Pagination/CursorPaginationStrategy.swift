@@ -97,6 +97,8 @@ public class CursorPaginationStrategy: PaginationStrategy {
     public func toStartPage() -> PageModel {
         let startPage = self.firstPage
         self.currentPage = nil
+        self.nextPage = nil
+        self.prevPage = nil
 
         return startPage
     }
