@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Please check our [developers guide](https://gitlab.com/tokend/developers-guide)
 for further information about branching and tagging conventions.
 
+## [Unreleased]
+
+### Fixed
+
+- Added `camelKey` keys convertion to `snake_case` for `Resource` serialization to `documentDictionary`
+
 ## [1.0.7] 09.10.2020
 
 ### Fixed

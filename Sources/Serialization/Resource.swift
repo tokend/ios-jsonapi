@@ -159,12 +159,12 @@ extension Array where Element: Resource {
                 "type": resource.type
             ]
             
-            if let attributes = attributes,
+            if let attributes = convertKeysToSnakeCase(attributes as Any) as? NSMutableDictionary,
                 attributes.count > 0 {
                 dictionary["attributes"] = attributes
             }
             
-            if let relationships = relationships,
+            if let relationships = convertKeysToSnakeCase(relationships as Any) as? NSMutableDictionary,
                 relationships.count > 0 {
                 dictionary["relationships"] = relationships
             }
@@ -183,4 +183,47 @@ extension Array where Element: Resource {
         
         return data
     }
+    
+    public func convertKeysToSnakeCase(_ jsonObject: Any) -> Any {
+        if let dict = jsonObject as? NSMutableDictionary {
+            let newDict = NSMutableDictionary()
+            dict.forEach { (key, value) in
+                if let strKey = key as? String {
+                    newDict[self.convertKeyToSnakeCase(strKey)] = self.convertKeysToSnakeCase(value)
+                } else {
+                    newDict[key] = self.convertKeysToSnakeCase(value)
+                }
+            }
+            return newDict
+        } else if let array = jsonObject as? NSMutableArray {
+            let newArray = NSMutableArray()
+            array.forEach { (obj) in
+                newArray.add(self.convertKeysToSnakeCase(obj))
+            }
+            return newArray
+        } else {
+            return jsonObject
+        }
+    }
+    
+    public func convertKeyToSnakeCase(_ key: String) -> String {
+        key.camelCaseToSnakeCase()
+    }
 }
+
+private extension String {
+    func camelCaseToSnakeCase() -> String {
+      let acronymPattern = "([A-Z]+)([A-Z][a-z]|[0-9])"
+      let fullWordsPattern = "([a-z])([A-Z]|[0-9])"
+      let digitsFirstPattern = "([0-9])([A-Z])"
+      return self.processCamelCaseRegex(pattern: acronymPattern)?
+        .processCamelCaseRegex(pattern: fullWordsPattern)?
+        .processCamelCaseRegex(pattern:digitsFirstPattern)?.lowercased() ?? self.lowercased()
+    }
+
+    func processCamelCaseRegex(pattern: String) -> String? {
+      let regex = try? NSRegularExpression(pattern: pattern, options: [])
+      let range = NSRange(location: 0, length: count)
+      return regex?.stringByReplacingMatches(in: self, options: [], range: range, withTemplate: "$1_$2")
+    }
+  }
