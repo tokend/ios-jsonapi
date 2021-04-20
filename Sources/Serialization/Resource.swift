@@ -105,12 +105,12 @@ open class Resource {
             dictionary["id"] = id
         }
         
-        if let attributes = attributes,
+        if let attributes = Resource.convertKeysToSnakeCase(attributes as Any) as? NSMutableDictionary,
             attributes.count > 0 {
             dictionary["attributes"] = attributes
         }
         
-        if let relationships = relationships,
+        if let relationships = Resource.convertKeysToSnakeCase(relationships as Any) as? NSMutableDictionary,
             relationships.count > 0 {
             dictionary["relationships"] = relationships
         }
@@ -125,6 +125,32 @@ open class Resource {
         )
         
         return data
+    }
+    
+    public static func convertKeysToSnakeCase(_ jsonObject: Any) -> Any {
+        if let dict = jsonObject as? NSMutableDictionary {
+            let newDict = NSMutableDictionary()
+            dict.forEach { (key, value) in
+                if let strKey = key as? String {
+                    newDict[self.convertKeyToSnakeCase(strKey)] = self.convertKeysToSnakeCase(value)
+                } else {
+                    newDict[key] = self.convertKeysToSnakeCase(value)
+                }
+            }
+            return newDict
+        } else if let array = jsonObject as? NSMutableArray {
+            let newArray = NSMutableArray()
+            array.forEach { (obj) in
+                newArray.add(self.convertKeysToSnakeCase(obj))
+            }
+            return newArray
+        } else {
+            return jsonObject
+        }
+    }
+    
+    public static func convertKeyToSnakeCase(_ key: String) -> String {
+        key.camelCaseToSnakeCase()
     }
 }
 
@@ -159,12 +185,12 @@ extension Array where Element: Resource {
                 "type": resource.type
             ]
             
-            if let attributes = convertKeysToSnakeCase(attributes as Any) as? NSMutableDictionary,
+            if let attributes = Resource.convertKeysToSnakeCase(attributes as Any) as? NSMutableDictionary,
                 attributes.count > 0 {
                 dictionary["attributes"] = attributes
             }
             
-            if let relationships = convertKeysToSnakeCase(relationships as Any) as? NSMutableDictionary,
+            if let relationships = Resource.convertKeysToSnakeCase(relationships as Any) as? NSMutableDictionary,
                 relationships.count > 0 {
                 dictionary["relationships"] = relationships
             }
@@ -182,32 +208,6 @@ extension Array where Element: Resource {
         )
         
         return data
-    }
-    
-    public func convertKeysToSnakeCase(_ jsonObject: Any) -> Any {
-        if let dict = jsonObject as? NSMutableDictionary {
-            let newDict = NSMutableDictionary()
-            dict.forEach { (key, value) in
-                if let strKey = key as? String {
-                    newDict[self.convertKeyToSnakeCase(strKey)] = self.convertKeysToSnakeCase(value)
-                } else {
-                    newDict[key] = self.convertKeysToSnakeCase(value)
-                }
-            }
-            return newDict
-        } else if let array = jsonObject as? NSMutableArray {
-            let newArray = NSMutableArray()
-            array.forEach { (obj) in
-                newArray.add(self.convertKeysToSnakeCase(obj))
-            }
-            return newArray
-        } else {
-            return jsonObject
-        }
-    }
-    
-    public func convertKeyToSnakeCase(_ key: String) -> String {
-        key.camelCaseToSnakeCase()
     }
 }
 
